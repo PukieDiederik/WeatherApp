@@ -1,0 +1,21 @@
+/* weather app */
+WeatherApp, WeatherApp *{
+    background-color: #0a142e;
+    color: white;
+    border: 1px solid #777;
+    text-align: center;
+}
+
+/* Quick overview */
+GOverviewQuick, GOverviewQuick *{
+    background-color: #0a142e;
+    color: #fff;
+}
+
+#LFLTemp{
+    background-color: purple;
+}
+
+#LWeatherName{
+    padding: 0px;
+}
