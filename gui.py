@@ -45,6 +45,9 @@ class WeatherApp(QWidget):
         hOverviewSA.setWidget(hOverviewWrapper)
         hOverviewSA.setFixedHeight(hOverviewWrapper.geometry().height() + 5) #TODO figure out this height after fixing everything
 
+        # Daily overview
+        self.doLayout = QVBoxLayout()
+
         # Layout - Quick Overview
         layout = PyQt5.QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.weatherIcon)
@@ -54,6 +57,9 @@ class WeatherApp(QWidget):
         # Layout - Hourly Overview
         layout.addWidget(self.hOverviewTitle)
         layout.addWidget(hOverviewSA)
+
+        # Layout - Daily overview
+        layout.addLayout(self.doLayout)
 
         # Set stuff for the window
         self.setFixedWidth(300)
@@ -95,6 +101,27 @@ class WeatherApp(QWidget):
             element.setParent(None)
             del element
 
+    #TODO: add, add multiple, remove, clear
+    # - Daily Overview
+    def addDOElement(self, element):
+        self.doLayout.addWidget(element)
+
+    def addDOElements(self, elements):
+        for e in elements:
+            self.doLayout.addWidget(e)
+
+    def removeDOElement(self, index):
+        element = self.doLayout.itemAt(index).widget()
+        self.doLayout.removeWidget(element)
+        element.setParent(None)
+        del element
+
+    def clearDOElements(self):
+        for index in reversed(range(self.doLayout.count())):
+            element = self.doLayout.itemAt(index).widget()
+            self.doLayout.removeWidget(element)
+            element.setParent(None)
+            del element
 
 class hourlyOverview(QWidget):
     def __init__(self, parent, wIconName, pop, _time):
@@ -102,7 +129,7 @@ class hourlyOverview(QWidget):
 
         icon = QLabel("W Icon", self)
         rainIcon = QLabel("R Icon", self)
-        pop = QLabel(str(pop) + "%", self)
+        pop = QLabel(str(int(pop * 100)) + "%", self)
         curTime = QLabel(str(time.localtime(_time).tm_hour) + ":00", self)
 
         icon.setFixedSize(70,70)
@@ -130,6 +157,53 @@ class hourlyOverview(QWidget):
         self.setFixedWidth(70)
         self.show()
 
+class dailyOverview(QWidget):
+    def __init__(self, parent, wIconName, _wName, _date, _temp, _flTemp, _pop):
+        super().__init__()
+
+        self.setParent(parent)
+
+        wIcon     = QLabel("wIcon"      , self)
+        wName     = QLabel(_wName      , self)
+        date      = QLabel(time.strftime("%a %d %b", time.localtime(_date)), self)
+        temp      = QLabel(str(_temp) + "°", self)
+        tempSplit = QLabel("/"          , self)
+        flTemp    = QLabel(str(_flTemp) + "°", self)
+        popIcon   = QLabel("pop Icon"   , self)
+        pop       = QLabel(str(int(_pop * 100)) + "%", self)
+
+        wIcon.setPixmap(QPixmap(f"./Resources/weather_icons/{wIconName}.png"))
+        wIcon.setScaledContents(True)
+        popIcon.setPixmap(QPixmap("./Resources/weather_icons/09d.png"))
+        popIcon.setScaledContents(True)
+
+        #layout stuff
+        layout = QHBoxLayout(self)
+        lGenInfo    = QVBoxLayout()
+        lStatsInfo  = QVBoxLayout()
+        lTemp = QHBoxLayout()
+        lPop = QHBoxLayout()
+        
+        lGenInfo.addWidget(wName)
+        lGenInfo.addWidget(date)
+        
+        lTemp.addWidget(temp)
+        lTemp.addWidget(tempSplit)
+        lTemp.addWidget(flTemp)
+
+        lPop.addWidget(popIcon)
+        lPop.addWidget(pop)
+
+        lStatsInfo.addLayout(lTemp)
+        lStatsInfo.addLayout(lPop)
+
+        layout.addWidget(wIcon)
+        layout.addLayout(lGenInfo)
+        layout.addLayout(lStatsInfo)
+
+        self.setFixedHeight(70)
+        self.setStyleSheet("border: 1px solid white; background-color: #0a142e; color: white;")
+        self.show()
 
 def main():
     app = QApplication([])
@@ -142,8 +216,10 @@ def main():
     main.setTemperature(16, 16) 
     main.setWeatherName("light rain")
     main.setWeatherIcon("10d")
-    main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600) for i in range(10)])
+    main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600) for i in range(12)])
+    main.addDOElements([dailyOverview(main, "09d", "mildly cloudy", 1619802000, 16, 15, .23) for i in range(3)])
     app.exec_()
+    
 
 if __name__ == '__main__':
     main()
