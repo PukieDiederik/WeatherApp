@@ -48,6 +48,31 @@ class WeatherApp(QWidget):
         # Daily overview
         self.doLayout = QVBoxLayout()
 
+        # Other info
+        cloudIcon = QLabel("cloudI", self)
+        cloudPerc = QLabel("cloud%", self)
+        uvi       = QLabel("uvi%", self)
+        uviIcon   = QLabel("uvi icon", self)
+        windIcon  = QLabel("windIcon", self)
+        windText  = QLabel("windText", self)
+
+        cloudIcon.setPixmap(QPixmap("insert image here"))
+        cloudIcon.setScaledContents(True)
+        uviIcon.setPixmap(QPixmap("insert image here"))
+        uviIcon.setScaledContents(True)
+        windIcon.setPixmap(QPixmap("insert image here"))
+        windIcon.setScaledContents(True)
+
+        genInfo = QHBoxLayout()
+        genInfo.addWidget(cloudIcon)
+        genInfo.addWidget(cloudPerc)
+        genInfo.addWidget(uvi)
+        genInfo.addWidget(uviIcon)
+
+        windInfo = QHBoxLayout()
+        windInfo.addWidget(windIcon)
+        windInfo.addWidget(windText)
+
         # Layout - Quick Overview
         layout = PyQt5.QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.weatherIcon)
@@ -60,6 +85,10 @@ class WeatherApp(QWidget):
 
         # Layout - Daily overview
         layout.addLayout(self.doLayout)
+
+        # Layout - Other info
+        layout.addLayout(genInfo)
+        layout.addLayout(windInfo)
 
         # Set stuff for the window
         self.setFixedWidth(300)
