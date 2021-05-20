@@ -1,4 +1,5 @@
 import time
+import math
 
 import PyQt5
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QCheckBox, QVBoxLayout, QSizePolicy, QHBoxLayout, QScrollArea
@@ -7,8 +8,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 
 # starting every class which is a gui element off with a 'G'
-# TODO:
-# - implement better stylesheets
 
 class WeatherApp(QWidget):
     def __init__(self):
@@ -50,28 +49,27 @@ class WeatherApp(QWidget):
 
         # Other info
         cloudIcon = QLabel("cloudI", self)
-        cloudPerc = QLabel("cloud%", self)
-        uvi       = QLabel("uvi%", self)
-        uviIcon   = QLabel("uvi icon", self)
+        self.cloudPerc = QLabel("cloud%", self)
+        self.uvi       = QLabel("uvi%", self)
+
         windIcon  = QLabel("windIcon", self)
-        windText  = QLabel("windText", self)
+        self.windDirection  = QLabel("WINDDIR", self)
+        self.windSpeed  = QLabel("WINDSPEED", self)
 
         cloudIcon.setPixmap(QPixmap("insert image here"))
         cloudIcon.setScaledContents(True)
-        uviIcon.setPixmap(QPixmap("insert image here"))
-        uviIcon.setScaledContents(True)
         windIcon.setPixmap(QPixmap("insert image here"))
         windIcon.setScaledContents(True)
 
         genInfo = QHBoxLayout()
         genInfo.addWidget(cloudIcon)
-        genInfo.addWidget(cloudPerc)
-        genInfo.addWidget(uvi)
-        genInfo.addWidget(uviIcon)
+        genInfo.addWidget(self.cloudPerc)
+        genInfo.addWidget(self.uvi)
 
         windInfo = QHBoxLayout()
         windInfo.addWidget(windIcon)
-        windInfo.addWidget(windText)
+        windInfo.addWidget(self.windDirection)
+        windInfo.addWidget(self.windSpeed)
 
         # Layout - Quick Overview
         layout = PyQt5.QtWidgets.QVBoxLayout(self)
@@ -130,7 +128,6 @@ class WeatherApp(QWidget):
             element.setParent(None)
             del element
 
-    #TODO: add, add multiple, remove, clear
     # - Daily Overview
     def addDOElement(self, element):
         self.doLayout.addWidget(element)
@@ -151,6 +148,19 @@ class WeatherApp(QWidget):
             self.doLayout.removeWidget(element)
             element.setParent(None)
             del element
+
+    # - Other Info
+    def setWind(self, windDirection, windSpeed):
+        #modify windDirection from degrees to text:
+        windDirections = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+        self.windDirection.setText(windDirections[math.floor((windDirection + 22.5) / 45)])
+        self.windSpeed.setText(str(round(windSpeed * 3.6, 1)) + " km/h")
+
+    def setUVI(self, uvi):
+        self.uvi.setText(str(uvi) + " UVI")
+
+    def setCloudiness(self, cloudiness):
+        self.cloudPerc.setText(str(cloudiness * 100) + "%")
 
 class hourlyOverview(QWidget):
     def __init__(self, parent, wIconName, pop, _time):
@@ -247,6 +257,11 @@ def main():
     main.setWeatherIcon("10d")
     main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600) for i in range(12)])
     main.addDOElements([dailyOverview(main, "09d", "mildly cloudy", 1619802000, 16, 15, .23) for i in range(3)])
+    
+    main.setWind(50, 6.3)
+    main.setUVI(2.5)
+    main.setCloudiness(.24)
+    
     app.exec_()
     
 
