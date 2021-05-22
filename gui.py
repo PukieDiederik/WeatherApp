@@ -12,15 +12,9 @@ from PyQt5.QtGui import QColor, QIcon, QPixmap
 class WeatherApp(QWidget):
     def __init__(self):
         super().__init__()
-        shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(5)
-        shadow.setColor(QColor(0,0,0,64))
-        shadow.setOffset(0, 5)
-
         # Widgets
         # Quick Overview
         qOverviewWrapper = QWidget(self)
-        qOverviewWrapper.setObjectName("QuickOverview")
         qOverviewWrapper.setProperty("css-class", "wrapper")
         qoLayout = QVBoxLayout()
 
@@ -50,25 +44,38 @@ class WeatherApp(QWidget):
         qOverviewWrapper.setLayout(qoLayout)
 
         # Hourly Overview
-        self.hOverviewTitle = QLabel("Hourly overview", self)
+        hOverviewWrapper = QWidget(self)
+        hOverviewWrapper.setProperty("css-class", "wrapper")
+        hOverviewLayout = QVBoxLayout()
+
 
         hOverviewSA = QScrollArea(self)
         hOverviewSA.setWidgetResizable(True)
         hOverviewSA.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         
-        self.hOverviewLayout = QHBoxLayout(self)
-        self.hOverviewLayout.addWidget(hourlyOverview(main, "01d", .21, 1619877600))
+        self.hOverviewWidgetLayout = QHBoxLayout(self)
+        self.hOverviewWidgetLayout.addWidget(hourlyOverview(main, "01d", .21, 1619877600))
 
-        hOverviewWrapper = QWidget(self)
-        hOverviewWrapper.setLayout(self.hOverviewLayout)
+        hOverviewSAWrapper = QWidget(self)
+        hOverviewSAWrapper.setLayout(self.hOverviewWidgetLayout)
 
-        hOverviewSA.setWidget(hOverviewWrapper)
-        hOverviewSA.setFixedHeight(hOverviewWrapper.geometry().height() + 5) #TODO figure out this height after fixing everything
+        hOverviewSA.setWidget(hOverviewSAWrapper)
+        hOverviewSA.setFixedHeight(hOverviewSAWrapper.geometry().height() + 20) #TODO figure out this height after fixing everything
+
+        hOverviewLayout.addWidget(hOverviewSA)
+        hOverviewWrapper.setLayout(hOverviewLayout)
 
         # Daily overview
+        dOverviewWrapper = QWidget(self)
+        dOverviewWrapper.setProperty("css-class", "wrapper")
         self.doLayout = QVBoxLayout()
+        dOverviewWrapper.setLayout(self.doLayout)
 
         # Other info
+        otherInfoWrapper = QWidget()
+        otherInfoWrapper.setProperty("css-class", "wrapper")
+        otherInfoLayout = QVBoxLayout()
+
         cloudIcon = QLabel("cloudI", self)
         self.cloudPerc = QLabel("cloud%", self)
         self.uvi       = QLabel("uvi%", self)
@@ -92,29 +99,43 @@ class WeatherApp(QWidget):
         windInfo.addWidget(self.windDirection)
         windInfo.addWidget(self.windSpeed)
 
-        layout = PyQt5.QtWidgets.QVBoxLayout(self)
+        otherInfoLayout.addLayout(genInfo)
+        otherInfoLayout.addLayout(windInfo)
+        otherInfoWrapper.setLayout(otherInfoLayout)
+
 
         # Styling - Quick Overview
-        qOverviewWrapper.setGraphicsEffect(shadow)
         self.weatherIcon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.weatherName.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.currentTemp.setAlignment(Qt.AlignmentFlag.AlignRight)
         tempSplitter.setFixedWidth(20) #set this number because it looked right
 
+        # Styling - Applying dropshadows
+        for x in [qOverviewWrapper, hOverviewWrapper, dOverviewWrapper, otherInfoWrapper]:
+            shadow = QGraphicsDropShadowEffect()
+            shadow.setBlurRadius(5)
+            shadow.setColor(QColor(0,0,0,64))
+            shadow.setOffset(0, 5)
+
+            x.setGraphicsEffect(shadow)
+
+
+        # Layout
+        layout = PyQt5.QtWidgets.QVBoxLayout(self)
+        layout.setSpacing(10)
+
         # Layout - Quick Overview
         layout.addWidget(qOverviewWrapper)
 
         # Layout - Hourly Overview
-        layout.addWidget(self.hOverviewTitle)
-        layout.addWidget(hOverviewSA)
+        layout.addWidget(hOverviewWrapper)
 
         # Layout - Daily overview
-        layout.addLayout(self.doLayout)
+        layout.addWidget(dOverviewWrapper)
 
         # Layout - Other info
-        layout.addLayout(genInfo)
-        layout.addLayout(windInfo)
+        layout.addWidget(otherInfoWrapper)
 
         # Set stuff for the window
         self.setFixedWidth(300)
@@ -137,22 +158,22 @@ class WeatherApp(QWidget):
 
     # - Hourly Overview
     def addHOElement(self, element):
-        self.hOverviewLayout.addWidget(element)
+        self.hOverviewWidgetLayout.addWidget(element)
     
     def addHOElements(self, elements):
         for e in elements:
-            self.hOverviewLayout.addWidget(e)
+            self.hOverviewWidgetLayout.addWidget(e)
         
     def removeHOElement(self, index):
-        element = self.hOverviewLayout.itemAt(index).widget()
-        self.hOverviewLayout.removeWidget(element)
+        element = self.hOverviewWidgetLayout.itemAt(index).widget()
+        self.hOverviewWidgetLayout.removeWidget(element)
         element.setParent(None)
         del element
 
     def clearHOElements(self):
-        for index in reversed(range(self.hOverviewLayout.count())):
-            element = self.hOverviewLayout.itemAt(index).widget()
-            self.hOverviewLayout.removeWidget(element)
+        for index in reversed(range(self.hOverviewWidgetLayout.count())):
+            element = self.hOverviewWidgetLayout.itemAt(index).widget()
+            self.hOverviewWidgetLayout.removeWidget(element)
             element.setParent(None)
             del element
 
