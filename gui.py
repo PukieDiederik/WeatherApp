@@ -2,24 +2,39 @@ import time
 import math
 
 import PyQt5
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QCheckBox, QVBoxLayout, QSizePolicy, QHBoxLayout, QScrollArea
+from PyQt5.QtWidgets import QApplication, QGraphicsDropShadowEffect, QLabel, QWidget, QCheckBox, QVBoxLayout, QSizePolicy, QHBoxLayout, QScrollArea
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QColor, QIcon, QPixmap
 
 # starting every class which is a gui element off with a 'G'
 
 class WeatherApp(QWidget):
     def __init__(self):
         super().__init__()
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(5)
+        shadow.setColor(QColor(0,0,0,64))
+        shadow.setOffset(0, 5)
+
         # Widgets
         # Quick Overview
-        self.weatherIcon = QLabel("Weather Icon", self)
-        self.weatherName = QLabel("Weather name", self)
+        qOverviewWrapper = QWidget(self)
+        qOverviewWrapper.setObjectName("QuickOverview")
+        qOverviewWrapper.setProperty("css-class", "wrapper")
+        qoLayout = QVBoxLayout()
 
-        self.currentTemp = QLabel("Current Temp", self)
-        tempSplitter     = QLabel("/", self)
-        self.flTemp      = QLabel("Feels like Temp", self)
+        self.weatherIcon = QLabel("Weather Icon", qOverviewWrapper)
+        self.weatherIcon.setObjectName("qoWeatherIcon")
+        self.weatherName = QLabel("Weather name", qOverviewWrapper)
+        self.weatherName.setObjectName("qoWeatherName")
+
+        self.currentTemp = QLabel("Current Temp", qOverviewWrapper)
+        tempSplitter     = QLabel("/", qOverviewWrapper)
+        self.flTemp      = QLabel("Feels like Temp", qOverviewWrapper)
+
+        tempSplitter.setProperty("css-class", "text-light-gray")
+        self.flTemp .setProperty("css-class", "text-light-gray")
 
         # Quick Overview - temperature display
         tempLayout = QHBoxLayout() #for the current temp, splitter and feels like temp
@@ -27,6 +42,12 @@ class WeatherApp(QWidget):
         tempLayout.addWidget(tempSplitter)
         tempLayout.addWidget(self.flTemp)
         
+        # Quick Overview - adding everything to wrapper
+        qoLayout.addWidget(self.weatherIcon)
+        qoLayout.addWidget(self.weatherName)
+        qoLayout.addLayout(tempLayout)
+
+        qOverviewWrapper.setLayout(qoLayout)
 
         # Hourly Overview
         self.hOverviewTitle = QLabel("Hourly overview", self)
@@ -71,11 +92,18 @@ class WeatherApp(QWidget):
         windInfo.addWidget(self.windDirection)
         windInfo.addWidget(self.windSpeed)
 
-        # Layout - Quick Overview
         layout = PyQt5.QtWidgets.QVBoxLayout(self)
-        layout.addWidget(self.weatherIcon)
-        layout.addWidget(self.weatherName)
-        layout.addLayout(tempLayout)
+
+        # Styling - Quick Overview
+        qOverviewWrapper.setGraphicsEffect(shadow)
+        self.weatherIcon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.weatherName.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.currentTemp.setAlignment(Qt.AlignmentFlag.AlignRight)
+        tempSplitter.setFixedWidth(20) #set this number because it looked right
+
+        # Layout - Quick Overview
+        layout.addWidget(qOverviewWrapper)
 
         # Layout - Hourly Overview
         layout.addWidget(self.hOverviewTitle)
