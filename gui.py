@@ -54,7 +54,7 @@ class WeatherApp(QWidget):
         hOverviewSA.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         
         self.hOverviewWidgetLayout = QHBoxLayout(self)
-        self.hOverviewWidgetLayout.addWidget(hourlyOverview(main, "01d", .21, 1619877600))
+        self.hOverviewWidgetLayout.addWidget(hourlyOverview(main, "01d", .21, 1619877600, 20))
 
         hOverviewSAWrapper = QWidget(self)
         hOverviewSAWrapper.setLayout(self.hOverviewWidgetLayout)
@@ -212,12 +212,13 @@ class WeatherApp(QWidget):
         self.cloudPerc.setText(str(cloudiness * 100) + "%")
 
 class hourlyOverview(QWidget):
-    def __init__(self, parent, wIconName, pop, _time):
+    def __init__(self, parent, wIconName, pop, _time, _temperature):
         super().__init__()
 
         icon = QLabel("W Icon", self)
         rainIcon = QLabel("R Icon", self)
         pop = QLabel(str(int(pop * 100)) + "%", self)
+        temperature = QLabel(str(_temperature) + "°", self)
         curTime = QLabel(str(time.localtime(_time).tm_hour) + ":00", self)
 
         icon.setFixedSize(70,70)
@@ -236,12 +237,11 @@ class hourlyOverview(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(icon)
         layout.addLayout(rainLayout)
+        layout.addWidget(temperature)
         layout.addWidget(curTime)
         
         layout.setSpacing(0)
         layout.setContentsMargins(0,0,0,0)
-
-        self.setStyleSheet("border: 1px solid white; background-color: #0a142e; color: white;")
         self.setFixedWidth(70)
         self.show()
 
@@ -290,7 +290,6 @@ class dailyOverview(QWidget):
         layout.addLayout(lStatsInfo)
 
         self.setFixedHeight(70)
-        self.setStyleSheet("border: 1px solid white; background-color: #0a142e; color: white;")
         self.show()
 
 def main():
@@ -304,7 +303,7 @@ def main():
     main.setTemperature(16, 16) 
     main.setWeatherName("light rain")
     main.setWeatherIcon("10d")
-    main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600) for i in range(12)])
+    main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600, 20) for i in range(12)])
     main.addDOElements([dailyOverview(main, "09d", "mildly cloudy", 1619802000, 16, 15, .23) for i in range(3)])
     
     main.setWind(50, 6.3)
