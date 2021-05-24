@@ -21,9 +21,6 @@ WeatherApp{
 }
 WeatherApp *{
     color: white;
-    /* border: 2px solid white; */
-    margin: 0px;
-    padding: 0px;
 }
 
 
@@ -34,12 +31,22 @@ WeatherApp *{
     font-weight: bold;
 }
 
+/* Hourly overview */
+#hOverviewSA{
+    background: qlineargradient( x1:0 y1:0, x2:0 y2:1, stop:0 #161616, stop:0.05 #1d1d1d, stop:0.95 #1d1d1d, stop:1 #161616);
+}
+
+hourlyOverview{
+    background-color: #262626;
+    border-radius: 10%;
+}
+
 /* Other classes */
 *[css-class~="wrapper"]{
-    background-color: #1d1d1d;
+    background-color: #232323;
     border-radius: 10%;
 }
 
 *[css-class~="text-light-gray"]{
-    color: #969696   
+    color: #969696;
 }

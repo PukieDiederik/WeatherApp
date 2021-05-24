@@ -48,17 +48,15 @@ class WeatherApp(QWidget):
         hOverviewWrapper.setProperty("css-class", "wrapper")
         hOverviewLayout = QVBoxLayout()
 
-
-        hOverviewSA = QScrollArea(self)
-        hOverviewSA.setWidgetResizable(True)
-        hOverviewSA.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        
         self.hOverviewWidgetLayout = QHBoxLayout(self)
-        self.hOverviewWidgetLayout.addWidget(hourlyOverview(main, "01d", .21, 1619877600, 20))
+        self.hOverviewWidgetLayout.addWidget(hourlyOverview(main, "01d", .21, 1619877600, 20, 21))
 
         hOverviewSAWrapper = QWidget(self)
         hOverviewSAWrapper.setLayout(self.hOverviewWidgetLayout)
+        hOverviewSAWrapper.setObjectName("hOverviewSA")
 
+        hOverviewSA = QScrollArea(self)
+        hOverviewSA.setWidgetResizable(True)
         hOverviewSA.setWidget(hOverviewSAWrapper)
         hOverviewSA.setFixedHeight(hOverviewSAWrapper.geometry().height() + 20) #TODO figure out this height after fixing everything
 
@@ -109,7 +107,14 @@ class WeatherApp(QWidget):
         self.weatherName.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.currentTemp.setAlignment(Qt.AlignmentFlag.AlignRight)
-        tempSplitter.setFixedWidth(20) #set this number because it looked right
+        tempSplitter.setFixedWidth(tempSplitter.fontMetrics().boundingRect(tempSplitter.text()).width())
+
+        # Styling - Hourly Overview
+        hOverviewLayout.setContentsMargins(0,15,0,15)
+        hOverviewSAWrapper.setContentsMargins(0,5,0,5)
+        hOverviewSA.setVerticalScrollBarPolicy  (Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        hOverviewSA.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        hOverviewSA.setFrameShape(QtWidgets.QFrame.NoFrame)
 
         # Styling - Applying dropshadows
         for x in [qOverviewWrapper, hOverviewWrapper, dOverviewWrapper, otherInfoWrapper]:
@@ -212,19 +217,20 @@ class WeatherApp(QWidget):
         self.cloudPerc.setText(str(cloudiness * 100) + "%")
 
 class hourlyOverview(QWidget):
-    def __init__(self, parent, wIconName, pop, _time, _temperature):
+    def __init__(self, parent, wIconName, pop, _time, _temp, _fltemp):
         super().__init__()
 
         icon = QLabel("W Icon", self)
         rainIcon = QLabel("R Icon", self)
         pop = QLabel(str(int(pop * 100)) + "%", self)
-        temperature = QLabel(str(_temperature) + "°", self)
+        temperature = QLabel(str(_temp) + "°", self)
+        tempSplitter = QLabel("  /  ", self)
+        flTemperature = QLabel(str(_fltemp) + "°", self)
         curTime = QLabel(str(time.localtime(_time).tm_hour) + ":00", self)
 
         icon.setFixedSize(70,70)
         icon.setPixmap(QPixmap(f"./Resources/weather_icons/{wIconName}.png"))
         icon.setScaledContents(True)
-        
 
         rainIcon.setFixedSize(pop.size().height(), pop.size().height())
         rainIcon.setPixmap(QPixmap("./Resources/weather_icons/09d.png"))
@@ -233,16 +239,37 @@ class hourlyOverview(QWidget):
         rainLayout.addWidget(rainIcon)
         rainLayout.addWidget(pop)
 
+        tempLayout = QHBoxLayout()
+        tempLayout.addWidget(temperature)
+        tempLayout.addWidget(tempSplitter)
+        tempLayout.addWidget(flTemperature)
 
         layout = QVBoxLayout(self)
         layout.addWidget(icon)
         layout.addLayout(rainLayout)
-        layout.addWidget(temperature)
+        layout.addLayout(tempLayout)
         layout.addWidget(curTime)
-        
+
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(5)
+        shadow.setColor(QColor(0,0,0,64))
+        shadow.setOffset(0, 5)
+
+        self.setGraphicsEffect(shadow)
+
+        # Styling
+        tempSplitter.setProperty("css-class", "text-light-gray")
+        flTemperature.setProperty("css-class", "text-light-gray")
+        tempSplitter.setFixedWidth(tempSplitter.fontMetrics().boundingRect(tempSplitter.text()).width())
+
         layout.setSpacing(0)
-        layout.setContentsMargins(0,0,0,0)
-        self.setFixedWidth(70)
+        pop.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        temperature.setAlignment(Qt.AlignmentFlag.AlignRight)
+        tempSplitter.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        flTemperature.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        curTime.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.show()
 
 class dailyOverview(QWidget):
@@ -294,22 +321,19 @@ class dailyOverview(QWidget):
 
 def main():
     app = QApplication([])
-    #gOverview = GOverviewQuick(None)
-    #Gprecipitation = GprecipitationGraph()
     main = WeatherApp()
-    main.setContentsMargins(0,0,0,0)
     app.setStyleSheet(open("./Resources/stylesheets/WeatherApp.css").read())
     #for testing purposes
     main.setTemperature(16, 16) 
     main.setWeatherName("light rain")
     main.setWeatherIcon("10d")
-    main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600, 20) for i in range(12)])
+    main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600, 20, 21) for i in range(12)])
     main.addDOElements([dailyOverview(main, "09d", "mildly cloudy", 1619802000, 16, 15, .23) for i in range(3)])
     
     main.setWind(50, 6.3)
     main.setUVI(2.5)
     main.setCloudiness(.24)
-    
+
     app.exec_()
     
 
