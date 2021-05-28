@@ -83,9 +83,11 @@ class WeatherApp(QWidget):
         self.windDirection  = QLabel("WINDDIR", self)
         self.windSpeed  = QLabel("WINDSPEED", self)
 
-        cloudIcon.setPixmap(QPixmap("insert image here"))
+        cloudIcon.setFixedSize(self.cloudPerc.fontMetrics().height(), self.cloudPerc.fontMetrics().height())
+        cloudIcon.setPixmap(QPixmap(getWeatherIcon("04d")))
         cloudIcon.setScaledContents(True)
-        windIcon.setPixmap(QPixmap("insert image here"))
+        windIcon.setFixedSize(self.windDirection.fontMetrics().height(), self.windDirection.fontMetrics().height())
+        windIcon.setPixmap(QPixmap("Resources/weather_icons/wind.png"))
         windIcon.setScaledContents(True)
 
         genInfo = QHBoxLayout()
@@ -207,7 +209,7 @@ class WeatherApp(QWidget):
     # - Other Info
     def setWind(self, windDirection, windSpeed):
         #modify windDirection from degrees to text:
-        windDirections = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+        windDirections = ["North", "North East", "East", "South East", "South", "South West", "West", "North West"]
         self.windDirection.setText(windDirections[math.floor((windDirection + 22.5) / 45)])
         self.windSpeed.setText(str(round(windSpeed * 3.6, 1)) + " km/h")
 
