@@ -160,7 +160,7 @@ class WeatherApp(QWidget):
         self.weatherName.setText(str(name))
 
     def setWeatherIcon(self, iconName):
-        self.weatherIcon.setPixmap(QPixmap("Resources/weather_icons/" + str(iconName)))
+        self.weatherIcon.setPixmap(getWeatherIcon(iconName))
 
     # - Hourly Overview
     def addHOElement(self, element):
@@ -230,11 +230,11 @@ class hourlyOverview(QWidget):
         curTime = QLabel(str(time.localtime(_time).tm_hour) + ":00", self)
 
         icon.setFixedSize(70,70)
-        icon.setPixmap(QPixmap(f"./Resources/weather_icons/{wIconName}.png"))
+        icon.setPixmap(getWeatherIcon(wIconName))
         icon.setScaledContents(True)
 
         rainIcon.setFixedSize(pop.size().height(), pop.size().height())
-        rainIcon.setPixmap(QPixmap("./Resources/weather_icons/09d.png"))
+        rainIcon.setPixmap(getWeatherIcon("09d"))
         rainIcon.setScaledContents(True)
         rainLayout = QHBoxLayout()
         rainLayout.addWidget(rainIcon)
@@ -289,10 +289,10 @@ class dailyOverview(QWidget):
         popIcon   = QLabel("pop Icon"   , self)
         pop       = QLabel(str(int(_pop * 100)) + "%", self)
 
-        wIcon.setPixmap(QPixmap(f"./Resources/weather_icons/{wIconName}.png"))
+        wIcon.setPixmap(getWeatherIcon(wIconName))
         wIcon.setScaledContents(True)
         wIcon.setFixedSize(50, 50)
-        popIcon.setPixmap(QPixmap("./Resources/weather_icons/09d.png"))
+        popIcon.setPixmap(getWeatherIcon("09d"))
         popIcon.setScaledContents(True)
         popIcon.setFixedSize(pop.size().height(), pop.size().height())
 
@@ -352,6 +352,11 @@ class dailyOverview(QWidget):
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.show()
 
+def getWeatherIcon(iconName: str):
+    iconName = iconName.replace("n","d")
+    return QPixmap(f"./Resources/weather_icons/{iconName}.png")
+
+
 def main():
     app = QApplication([])
     main = WeatherApp()
@@ -360,7 +365,7 @@ def main():
     main.setTemperature(16, 16) 
     main.setWeatherName("heavy shower rain and drizzle")
     main.setWeatherIcon("10d")
-    main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600, 20, 21) for i in range(12)])
+    main.addHOElements([hourlyOverview(main, "01n", .21, 1619877600, 20, 21) for i in range(12)])
     main.addDOElements([dailyOverview(main, "09d", "Clouds", 1619802000, 16, 15, .23) for i in range(3)])
     
     main.setWind(50, 6.3)
