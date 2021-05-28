@@ -1,10 +1,11 @@
 import time
 import math
+import locale
 
 import PyQt5
 from PyQt5.QtWidgets import QApplication, QGraphicsDropShadowEffect, QLabel, QWidget, QCheckBox, QVBoxLayout, QSizePolicy, QHBoxLayout, QScrollArea
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QMargins, Qt
 from PyQt5.QtGui import QColor, QIcon, QPixmap
 
 # starting every class which is a gui element off with a 'G'
@@ -280,24 +281,47 @@ class dailyOverview(QWidget):
 
         wIcon     = QLabel("wIcon"      , self)
         wName     = QLabel(_wName      , self)
-        date      = QLabel(time.strftime("%a %d %b", time.localtime(_date)), self)
+        __time = time.localtime()
+        date      = QLabel(time.strftime("%a %d %b", __time), self)
         temp      = QLabel(str(_temp) + "°", self)
-        tempSplit = QLabel("/"          , self)
+        tempSplit = QLabel("  /  "          , self)
         flTemp    = QLabel(str(_flTemp) + "°", self)
         popIcon   = QLabel("pop Icon"   , self)
         pop       = QLabel(str(int(_pop * 100)) + "%", self)
 
         wIcon.setPixmap(QPixmap(f"./Resources/weather_icons/{wIconName}.png"))
         wIcon.setScaledContents(True)
+        wIcon.setFixedSize(50, 50)
         popIcon.setPixmap(QPixmap("./Resources/weather_icons/09d.png"))
         popIcon.setScaledContents(True)
+        popIcon.setFixedSize(pop.size().height(), pop.size().height())
+
+        temp.setFixedWidth(temp.fontMetrics().boundingRect(temp.text()).width() + 2)
+        tempSplit.setFixedWidth(tempSplit.fontMetrics().boundingRect(tempSplit.text()).width())
+        flTemp.setFixedWidth(flTemp.fontMetrics().boundingRect(flTemp.text()).width() + 2)
+        pop.setFixedWidth(pop.fontMetrics().boundingRect(pop.text()).width())
+        tempSplit.setProperty("css-class", "text-light-gray")
+        flTemp.setProperty("css-class", "text-light-gray")
+        temp.setAlignment(Qt.AlignmentFlag.AlignRight)
+        tempSplit.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        flTemp.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        pop.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         #layout stuff
         layout = QHBoxLayout(self)
+        layout.setContentsMargins(0,0,0,0)
+        layout.setSpacing(0)
+        tempPopWrapper = QWidget(self)
+        tempPopWrapper.setObjectName("doTempPopWrapper")
+        tempPopWrapper.setContentsMargins(10,5,10,0)
         lGenInfo    = QVBoxLayout()
         lStatsInfo  = QVBoxLayout()
+        lStatsInfo.setSpacing(0)
+        lStatsInfo.setContentsMargins(0,0,0,0)
         lTemp = QHBoxLayout()
         lPop = QHBoxLayout()
+        lTemp.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lPop.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         lGenInfo.addWidget(wName)
         lGenInfo.addWidget(date)
@@ -311,12 +335,21 @@ class dailyOverview(QWidget):
 
         lStatsInfo.addLayout(lTemp)
         lStatsInfo.addLayout(lPop)
+        tempPopWrapper.setLayout(lStatsInfo)
+        tempPopWrapper.setFixedWidth(temp.size().width() + tempSplit.size().width() + flTemp.size().width() + 20)
 
         layout.addWidget(wIcon)
         layout.addLayout(lGenInfo)
-        layout.addLayout(lStatsInfo)
+        layout.addWidget(tempPopWrapper)
 
-        self.setFixedHeight(70)
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(5)
+        shadow.setColor(QColor(0,0,0,64))
+        shadow.setOffset(0, 5)
+
+        self.setGraphicsEffect(shadow)
+
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.show()
 
 def main():
@@ -325,10 +358,10 @@ def main():
     app.setStyleSheet(open("./Resources/stylesheets/WeatherApp.css").read())
     #for testing purposes
     main.setTemperature(16, 16) 
-    main.setWeatherName("light rain")
+    main.setWeatherName("heavy shower rain and drizzle")
     main.setWeatherIcon("10d")
     main.addHOElements([hourlyOverview(main, "01d", .21, 1619877600, 20, 21) for i in range(12)])
-    main.addDOElements([dailyOverview(main, "09d", "mildly cloudy", 1619802000, 16, 15, .23) for i in range(3)])
+    main.addDOElements([dailyOverview(main, "09d", "Clouds", 1619802000, 16, 15, .23) for i in range(3)])
     
     main.setWind(50, 6.3)
     main.setUVI(2.5)
