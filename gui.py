@@ -16,7 +16,8 @@ class WeatherApp(QWidget):
         # Widgets
         # Quick Overview
         qOverviewWrapper = QWidget(self)
-        qOverviewWrapper.setProperty("css-class", "wrapper")
+        qOverviewWrapper.setProperty("depth", 1)
+        qOverviewWrapper.setProperty("rounded", True)
         qoLayout = QVBoxLayout()
 
         self.weatherIcon = QLabel("Weather Icon", qOverviewWrapper)
@@ -28,8 +29,8 @@ class WeatherApp(QWidget):
         tempSplitter     = QLabel("/", qOverviewWrapper)
         self.flTemp      = QLabel("Feels like Temp", qOverviewWrapper)
 
-        tempSplitter.setProperty("css-class", "text-light-gray")
-        self.flTemp .setProperty("css-class", "text-light-gray")
+        tempSplitter.setProperty("text-color", "alternate")
+        self.flTemp .setProperty("text-color", "alternate")
 
         # Quick Overview - temperature display
         tempLayout = QHBoxLayout() #for the current temp, splitter and feels like temp
@@ -46,7 +47,8 @@ class WeatherApp(QWidget):
 
         # Hourly Overview
         hOverviewWrapper = QWidget(self)
-        hOverviewWrapper.setProperty("css-class", "wrapper")
+        hOverviewWrapper.setProperty("depth", 1)
+        hOverviewWrapper.setProperty("rounded", True)
         hOverviewLayout = QVBoxLayout()
 
         self.hOverviewWidgetLayout = QHBoxLayout(self)
@@ -66,13 +68,15 @@ class WeatherApp(QWidget):
 
         # Daily overview
         dOverviewWrapper = QWidget(self)
-        dOverviewWrapper.setProperty("css-class", "wrapper")
+        dOverviewWrapper.setProperty("depth", 1)
+        dOverviewWrapper.setProperty("rounded", True)
         self.doLayout = QVBoxLayout()
         dOverviewWrapper.setLayout(self.doLayout)
 
         # Other info
         otherInfoWrapper = QWidget()
-        otherInfoWrapper.setProperty("css-class", "wrapper")
+        otherInfoWrapper.setProperty("depth", 1)
+        otherInfoWrapper.setProperty("rounded", True)
         otherInfoLayout = QVBoxLayout()
 
         cloudIcon = QLabel("cloudI", self)
@@ -128,7 +132,6 @@ class WeatherApp(QWidget):
 
             x.setGraphicsEffect(shadow)
 
-
         # Layout
         layout = PyQt5.QtWidgets.QVBoxLayout(self)
         layout.setSpacing(10)
@@ -148,6 +151,7 @@ class WeatherApp(QWidget):
         # Set stuff for the window
         self.setFixedWidth(300)
         self.setContentsMargins(0,0,0,0)
+        self.setProperty("depth", 0)
         self.setWindowTitle("main window")
         self.show()
 
@@ -261,8 +265,8 @@ class hourlyOverview(QWidget):
         self.setGraphicsEffect(shadow)
 
         # Styling
-        tempSplitter.setProperty("css-class", "text-light-gray")
-        flTemperature.setProperty("css-class", "text-light-gray")
+        tempSplitter.setProperty ("text-color", "alternate")
+        flTemperature.setProperty("text-color", "alternate")
         tempSplitter.setFixedWidth(tempSplitter.fontMetrics().boundingRect(tempSplitter.text()).width())
 
         layout.setSpacing(0)
@@ -273,6 +277,8 @@ class hourlyOverview(QWidget):
         curTime.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.setProperty("depth", 2)
+        self.setProperty("rounded", True)
         self.show()
 
 class dailyOverview(QWidget):
@@ -302,8 +308,8 @@ class dailyOverview(QWidget):
         tempSplit.setFixedWidth(tempSplit.fontMetrics().boundingRect(tempSplit.text()).width())
         flTemp.setFixedWidth(flTemp.fontMetrics().boundingRect(flTemp.text()).width() + 2)
         pop.setFixedWidth(pop.fontMetrics().boundingRect(pop.text()).width())
-        tempSplit.setProperty("css-class", "text-light-gray")
-        flTemp.setProperty("css-class", "text-light-gray")
+        tempSplit.setProperty("text-color", "alternate")
+        flTemp.setProperty   ("text-color", "alternate")
         temp.setAlignment(Qt.AlignmentFlag.AlignRight)
         tempSplit.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         flTemp.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -350,7 +356,8 @@ class dailyOverview(QWidget):
         shadow.setOffset(0, 5)
 
         self.setGraphicsEffect(shadow)
-
+        self.setProperty("depth", 2)
+        self.setProperty("rounded", True)
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.show()
 
