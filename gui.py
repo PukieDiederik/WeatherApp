@@ -57,11 +57,11 @@ class WeatherApp(QWidget):
         # Hourly Overview - Scrollable area
         hOverviewSA = QScrollArea()
         hOverviewSA.setVerticalScrollBarPolicy  (QtCore.Qt.ScrollBarAlwaysOff)
-        hOverviewSA.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        hOverviewSA.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         hOverviewSA.setFrameShape(QtWidgets.QFrame.NoFrame)
         hOverviewSA.setWidget(hOverviewWidgetsWrapper)
         hOverviewSA.setWidgetResizable(True)
-        hOverviewSA.setFixedHeight(180)
+        hOverviewSA.setFixedHeight(190)
 
         # Hourly Overview - Final layout
         hOverviewLayout = QVBoxLayout(hOverviewWrapper)
@@ -225,7 +225,7 @@ class hourlyOverview(QWidget):
         tempSplitter  = QLabel("  /  ", self)
         flTemperature = QLabel(str(round(_fltemp)) + "°", self)
 
-        curTime       = QLabel(str(time.localtime(_time).tm_hour) + ":00", self)
+        curTime       = QLabel(time.strftime("%a %H:00", time.localtime(_time)), self)
 
         icon.setFixedSize(70,70)
         icon.setPixmap(getWeatherIcon(wIconName))
@@ -281,7 +281,7 @@ class dailyOverview(QWidget):
         popIcon   = QLabel(self)
         pop       = QLabel(str(int(_pop * 100)) + "%", self)
 
-        date      = QLabel(time.strftime("%a %d %b", time.localtime()), self)
+        date      = QLabel(time.strftime("%a %d %b", time.localtime(_date)), self)
 
         wIcon.setPixmap(getWeatherIcon(wIconName))
         wIcon.setScaledContents(True)

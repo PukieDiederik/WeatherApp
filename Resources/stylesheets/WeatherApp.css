@@ -16,6 +16,21 @@ WeatherApp *{ color: white; }
     border-bottom-right-radius: 10%; 
 }
 
+QScrollBar::horizontal{
+    background-color: #161616;
+    height: 10px;
+}
+QScrollBar::add-line::horizontal{
+    width: 0px;
+}
+QScrollBar::sub-line::horizontal{
+    width: 0px;
+}
+QScrollBar::handle::horizontal{
+    background-color: rgba(0, 0, 0, .5);
+    border-radius: 100%;
+}
+
 *[rounded=true]{ border-radius: 10%; }
 
 *[depth="0"]{ background-color: #121212; }
