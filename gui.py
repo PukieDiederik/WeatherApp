@@ -115,9 +115,22 @@ class WeatherApp(QWidget):
         otherInfoLayout.addLayout(genInfo)
         otherInfoLayout.addLayout(windInfo)
 
+        # Overall wrapper
+        allLayout = QVBoxLayout(self)
+        allLayout.setContentsMargins(0,0,0,0)
+        allWrapper = QWidget(objectName="allWrapper")
+        allWrapper.setProperty("depth", 0)
+
+        allScrollArea = QScrollArea()
+        allScrollArea.setWidget(allWrapper)
+        allScrollArea.setWidgetResizable(True)
+        allScrollArea.setVerticalScrollBarPolicy  (QtCore.Qt.ScrollBarAlwaysOff)
+        allScrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        allScrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
+        allLayout.addWidget(allScrollArea)
 
         # Layout
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout(allWrapper)
         layout.setSpacing(10)
         layout.addWidget(qOverviewWrapper)
         layout.addWidget(hOverviewWrapper)
@@ -127,8 +140,8 @@ class WeatherApp(QWidget):
         # Set stuff for the window
         self.setFixedWidth(300) # TODO: needs to be changed to have no fixed width (for phone this should just be able to have fullscreen)
         self.setContentsMargins(0,0,0,0)
-        self.setProperty("depth", 0)
         self.setWindowTitle("main window")
+        self.setMinimumHeight(500)
         self.show()
 
 
