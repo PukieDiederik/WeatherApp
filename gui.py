@@ -16,16 +16,16 @@ class WeatherApp(QWidget):
         qOverviewWrapper.setProperty("rounded", True)
         qOverviewWrapper.setGraphicsEffect(getShadowEffect())
 
-        self.weatherIcon = QLabel("Weather Icon", qOverviewWrapper)
-        self.weatherName = QLabel("Weather name", qOverviewWrapper, objectName="qoWeatherName")
+        self.weatherIcon = QLabel(qOverviewWrapper)
+        self.weatherName = QLabel(qOverviewWrapper, objectName="qoWeatherName")
         self.weatherIcon.setAlignment(QtCore.Qt.AlignCenter)
         self.weatherName.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.currentTemp = QLabel("Current Temp"   , qOverviewWrapper)
+        self.currentTemp = QLabel(qOverviewWrapper)
         self.currentTemp.setAlignment(QtCore.Qt.AlignRight)
         tempSplitter     = QLabel("/"              , qOverviewWrapper)
         tempSplitter.setFixedWidth(tempSplitter.fontMetrics().boundingRect(tempSplitter.text()).width())
-        self.flTemp      = QLabel("Feels like Temp", qOverviewWrapper)
+        self.flTemp      = QLabel(qOverviewWrapper)
 
         tempSplitter.setProperty("text-color", "alternate")
         self.flTemp .setProperty("text-color", "alternate")
@@ -135,8 +135,8 @@ class WeatherApp(QWidget):
     # change values functions
     # - Quick overview
     def setTemperature(self, temp, feelsLike):
-        self.flTemp.setText(str(feelsLike) + "°")
-        self.currentTemp.setText(str(temp) + "°")
+        self.flTemp.setText(str(round(feelsLike)) + "°")
+        self.currentTemp.setText(str(round(temp)) + "°")
 
     def setWeatherName(self, name):
         self.weatherName.setText(str(name))
@@ -194,23 +194,23 @@ class WeatherApp(QWidget):
         self.windSpeed.setText(str(round(windSpeed * 3.6, 1)) + " km/h")
 
     def setUVI(self, uvi):
-        self.uvi.setText(str(uvi) + " UVI")
+        self.uvi.setText(str(round(uvi)) + " UVI")
 
     def setCloudiness(self, cloudiness):
-        self.cloudPerc.setText(str(cloudiness * 100) + "%")
+        self.cloudPerc.setText(str(cloudiness) + "%")
 
 class hourlyOverview(QWidget):
     def __init__(self, parent, wIconName, pop, _time, _temp, _fltemp):
         super().__init__()
 
-        icon          = QLabel("W Icon", self)
+        icon          = QLabel(self)
 
-        rainIcon      = QLabel("R Icon", self)
+        rainIcon      = QLabel(self)
         pop           = QLabel(str(int(pop * 100)) + "%", self)
 
-        temperature   = QLabel(str(_temp) + "°", self)
+        temperature   = QLabel(str(round(_temp)) + "°", self)
         tempSplitter  = QLabel("  /  ", self)
-        flTemperature = QLabel(str(_fltemp) + "°", self)
+        flTemperature = QLabel(str(round(_fltemp)) + "°", self)
 
         curTime       = QLabel(str(time.localtime(_time).tm_hour) + ":00", self)
 
@@ -261,8 +261,8 @@ class dailyOverview(QWidget):
         wIcon     = QLabel(self)
         wName     = QLabel(_wName, self)
         
-        temp      = QLabel(str(_temp)   + "°", self)
-        flTemp    = QLabel(str(_flTemp) + "°", self)
+        temp      = QLabel(str(round(_temp))   + "°", self)
+        flTemp    = QLabel(str(round(_flTemp)) + "°", self)
         tempSplit = QLabel("  /  ", self)
 
         popIcon   = QLabel(self)
